@@ -19,10 +19,10 @@ jobs:
       uses: microsoft/setup-msbuild@v1.3.1
       
     - name: Build The Mod
-      run: msbuild src\SlugpupMod\SlugpupMod.csproj -property:Configuration=Release
+      run: msbuild .\SlugpupMod.sln -property:Configuration=Release
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v3.1.2
       with:
         name: slugpup_mod
-        path: bin\Release\*
+        path: .\bin\Release\*
