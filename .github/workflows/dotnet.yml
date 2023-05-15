@@ -32,7 +32,7 @@ jobs:
           # Artifact name
           name: NoSlugPupMurder
           # A file, directory or wildcard pattern that describes what to upload
-          path: ./bin/Release/BetterSlugpuppies.dll
+          path: ./bin/Release/*
     - name: Download a Build Artifact
       uses: actions/download-artifact@v2.1.1
       with:
