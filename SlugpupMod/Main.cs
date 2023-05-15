@@ -16,10 +16,11 @@ namespace BetterSlugPups
         public void OnEnable()
         {
             /* This is called when the mod is loaded. */
-            // subscribe your PlayerUpdateHook to the Player.Update method from the game
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
         }
 
+        // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
+        // The function must return the same type as the original function
         float ThrowOutScoreHook(On.TempleGuardAI.orig_ThrowOutScore orig, TempleGuardAI self, Tracker.CreatureRepresentation creature)
         {
             // Check if the targeted creature is a Slugpup
@@ -28,6 +29,7 @@ namespace BetterSlugPups
                 // Check player's Karma
                 if ((self.guard.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma >= 9)
                 {
+                    // Make Guardians not aggressive if karma is high enough
                     return 0f;
                 }
             }
