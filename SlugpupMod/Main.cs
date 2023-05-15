@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BepInEx;
 using System.Security.Permissions;
 using MoreSlugcats;
+using RWCustom;
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 namespace BetterSlugPups
@@ -17,6 +18,7 @@ namespace BetterSlugPups
         {
             /* This is called when the mod is loaded. */
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
+            On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
@@ -35,6 +37,48 @@ namespace BetterSlugPups
             }
             // Original function here
             return orig(self, creature); // Return value of original game's code
+        }
+
+        bool BiteCreatureHook(On.LizardAI.orig_DoIWantToBiteThisCreature orig, LizardAI self, Tracker.CreatureRepresentation creature)
+        {
+            // If it is a slugpup
+            if (creature.representedCreature != null && creature.representedCreature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC)
+            {
+                // Why does this game mode exist
+                if (ModManager.CoopAvailable && Custom.rainWorld.options.friendlyLizards)
+                {
+                    bool playersFriendly = false; // Will turn true if any player is the lizard's friend
+
+                    // Loop through all alive players
+                    foreach (AbstractCreature checkCrit in self.lizard.abstractCreature.world.game.NonPermaDeadPlayers)
+                    {
+                        // If the player is the lizard's friend, break the loop and set the variable
+                        if (self.friendTracker.friend == checkCrit.realizedCreature) { 
+                            playersFriendly = true;
+                            break;
+                        }
+                    }
+                    // If any of the players are a lizard's friend, dont eat the slugpup
+                    if (playersFriendly)
+                    {
+                        return false;
+                    }
+                }
+
+                // If the parent is a player
+                if (creature.representedCreature.abstractAI.parent.realizedCreature is Player)
+                {
+                    // Typecast the creature's parent to a player
+                    Player player = creature.representedCreature.abstractAI.parent.realizedCreature as Player;
+                    
+                    // Why dont they use RELATIONSHIPS INSTEAD
+                    if (self.friendTracker.friend == player)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return orig(self, creature);
         }
     }
 }
