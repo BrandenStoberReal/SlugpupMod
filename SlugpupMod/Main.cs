@@ -14,6 +14,40 @@ namespace BetterSlugPups
     [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.0")] // (GUID, mod name, mod version)
     public class BetterSlugPups : BaseUnityPlugin
     {
+
+        // Functions
+
+        /// <summary>
+        /// Gets the owner of a slugpup
+        /// </summary>
+        /// <param name="slugpuppy"></param>
+        /// <returns></returns>
+        Player GetPlayerFromSlugpup(AbstractCreature slugpuppy)
+        {
+            return slugpuppy.abstractAI.parent.realizedCreature as Player;
+        }
+
+        /// <summary>
+        /// Checks if a given character is a slugpup
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <returns></returns>
+        bool IsCharacterSlugpup(AbstractCreature creature)
+        {
+            return (creature != null && creature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC); // What the fuck?
+        }
+
+        /// <summary>
+        /// Checks if a creature is friends with a given lizard
+        /// </summary>
+        /// <param name="lizard"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool IsLizardFriends(LizardAI lizard, Creature entity)
+        {
+                return (lizard.friendTracker.friend == entity);
+        }
+
         public void OnEnable()
         {
             /* This is called when the mod is loaded. */
@@ -26,7 +60,7 @@ namespace BetterSlugPups
         float ThrowOutScoreHook(On.TempleGuardAI.orig_ThrowOutScore orig, TempleGuardAI self, Tracker.CreatureRepresentation creature)
         {
             // Check if the targeted creature is a Slugpup
-            if (creature.representedCreature != null && creature.representedCreature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC) // What the fuck?
+            if (IsCharacterSlugpup(creature.representedCreature))
             {
                 // Check player's Karma
                 if ((self.guard.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma >= 9)
@@ -42,7 +76,7 @@ namespace BetterSlugPups
         bool BiteCreatureHook(On.LizardAI.orig_DoIWantToBiteThisCreature orig, LizardAI self, Tracker.CreatureRepresentation creature)
         {
             // If it is a slugpup
-            if (creature.representedCreature != null && creature.representedCreature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC)
+            if (IsCharacterSlugpup(creature.representedCreature))
             {
                 // Why does this game mode exist
                 if (ModManager.CoopAvailable && Custom.rainWorld.options.friendlyLizards)
@@ -58,7 +92,7 @@ namespace BetterSlugPups
                             break;
                         }
                     }
-                    // If any of the players are a lizard's friend, dont eat the slugpup
+                    // If any of the players are a lizard's friend, dont eat the child
                     if (playersFriendly)
                     {
                         return false;
@@ -68,11 +102,11 @@ namespace BetterSlugPups
                 // If the parent is a player
                 if (creature.representedCreature.abstractAI.parent.realizedCreature is Player)
                 {
-                    // Typecast the creature's parent to a player
-                    Player player = creature.representedCreature.abstractAI.parent.realizedCreature as Player;
+                    // Get player with my cool af function
+                    Player player = GetPlayerFromSlugpup(creature.representedCreature);
                     
-                    // Why dont they use RELATIONSHIPS INSTEAD
-                    if (self.friendTracker.friend == player)
+                    // If the lizard is friends with our player, don't eat his child. He will eat other children tho.
+                    if (IsLizardFriends(self, player))
                     {
                         return false;
                     }
