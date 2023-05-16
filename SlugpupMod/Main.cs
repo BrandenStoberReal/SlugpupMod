@@ -128,6 +128,7 @@ namespace BetterSlugPups
                     if (IsLizardFriends(self, owner))
                     {
                         self.preyTracker.ForgetPrey(prey.critRep.representedCreature);
+                        self.preyTracker.Update();
                     }
                 }
             }
