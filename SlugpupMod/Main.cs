@@ -52,7 +52,7 @@ namespace BetterSlugPups
         {
             /* This is called when the mod is loaded. */
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
-            On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
+            //On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
             On.LizardAI.Update += ModifiedLizardUpdate;
         }
 
@@ -74,6 +74,7 @@ namespace BetterSlugPups
             return orig(self, creature); // Return value of original game's code
         }
 
+        /*
         bool BiteCreatureHook(On.LizardAI.orig_DoIWantToBiteThisCreature orig, LizardAI self, Tracker.CreatureRepresentation creature)
         {
             // If it is a slugpup
@@ -103,7 +104,7 @@ namespace BetterSlugPups
                 // If the parent is a player
                 if (creature.representedCreature.abstractAI.parent.realizedCreature is Player)
                 {
-                    // Get player with my cool af function
+                    // Get player with my cool function
                     Player player = GetPlayerFromSlugpup(creature.representedCreature);
                     
                     // If the lizard is friends with our player, don't eat his child. He will eat other children tho.
@@ -115,6 +116,7 @@ namespace BetterSlugPups
             }
             return orig(self, creature);
         }
+        */
 
         void ModifiedLizardUpdate(On.LizardAI.orig_Update orig, LizardAI self)
         {
