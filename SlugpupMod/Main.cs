@@ -163,7 +163,7 @@ namespace BetterSlugPups
             // 0.05% chance to get food by jumping if your karma is maxed out. Why? Because good deeds should be rewarded.
             if (RandomChance(0.0005) && (self.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma >= 9)
             {
-                self.AddFood(3);
+                self.AddFood(1);
             }
 
             // 0.05% chance to turn the current room into a snowy blizzard when you jump if your karma is the lowest possible.
