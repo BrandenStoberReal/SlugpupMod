@@ -169,7 +169,7 @@ namespace BetterSlugPups
             // 0.05% chance to turn the current room into a snowy blizzard when you jump if your karma is the lowest possible.
             if (RandomChance(0.0005) && (self.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma <= 1)
             {
-                if (self.room.IsGateRoom() == false && self.room.abstractRoom.isAncientShelter == false)
+                if (self.room.IsGateRoom() == false && self.room.abstractRoom.isAncientShelter == false && self.room.blizzard == false)
                 {
                     self.room.AddSnow();
                     self.room.blizzard = true;
