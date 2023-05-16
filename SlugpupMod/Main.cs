@@ -7,14 +7,16 @@ using BepInEx;
 using System.Security.Permissions;
 using MoreSlugcats;
 using RWCustom;
+using IL;
+using On;
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+
 namespace BetterSlugPups
 {
-    [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.0")] // (GUID, mod name, mod version)
+    [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.1")] // (GUID, mod name, mod version)
     public class BetterSlugPups : BaseUnityPlugin
     {
-
         // Functions
 
         /// <summary>
@@ -22,7 +24,7 @@ namespace BetterSlugPups
         /// </summary>
         /// <param name="slugpuppy"></param>
         /// <returns></returns>
-        Player GetPlayerFromSlugpup(AbstractCreature slugpuppy)
+        private Player GetPlayerFromSlugpup(AbstractCreature slugpuppy)
         {
             return slugpuppy.abstractAI.parent.realizedCreature as Player;
         }
@@ -32,7 +34,7 @@ namespace BetterSlugPups
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        bool IsCharacterSlugpup(AbstractCreature creature)
+        private bool IsCharacterSlugpup(AbstractCreature creature)
         {
             return (creature != null && creature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC); // What the fuck?
         }
@@ -43,22 +45,41 @@ namespace BetterSlugPups
         /// <param name="lizard"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        bool IsLizardFriends(LizardAI lizard, Creature entity)
+        private bool IsLizardFriends(LizardAI lizard, Creature entity)
         {
-                return (lizard.friendTracker.friend == entity);
+            return (lizard.friendTracker.friend == entity);
         }
 
+        /// <summary>
+        /// Basic RNG generator for "random" events
+        /// </summary>
+        /// <param name="probability"></param>
+        /// <returns>A bool determining whether the probability succeeded</returns>
+        private bool RandomChance(double probability)
+        {
+            Random rng = new Random();
+            if (rng.NextDouble() < probability)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // Begin hooks here
         public void OnEnable()
         {
-            /* This is called when the mod is loaded. */
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
             //On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
             On.LizardAI.Update += ModifiedLizardUpdate;
+            On.Player.Jump += PlayerJump;
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
         // The function must return the same type as the original function
-        float ThrowOutScoreHook(On.TempleGuardAI.orig_ThrowOutScore orig, TempleGuardAI self, Tracker.CreatureRepresentation creature)
+        private float ThrowOutScoreHook(On.TempleGuardAI.orig_ThrowOutScore orig, TempleGuardAI self, Tracker.CreatureRepresentation creature)
         {
             // Check if the targeted creature is a Slugpup
             if (IsCharacterSlugpup(creature.representedCreature))
@@ -89,7 +110,7 @@ namespace BetterSlugPups
                     foreach (AbstractCreature checkCrit in self.lizard.abstractCreature.world.game.NonPermaDeadPlayers)
                     {
                         // If the player is the lizard's friend, break the loop and set the variable
-                        if (self.friendTracker.friend == checkCrit.realizedCreature) { 
+                        if (self.friendTracker.friend == checkCrit.realizedCreature) {
                             playersFriendly = true;
                             break;
                         }
@@ -106,7 +127,7 @@ namespace BetterSlugPups
                 {
                     // Get player with my cool function
                     Player player = GetPlayerFromSlugpup(creature.representedCreature);
-                    
+
                     // If the lizard is friends with our player, don't eat his child. He will eat other children tho.
                     if (IsLizardFriends(self, player))
                     {
@@ -118,7 +139,7 @@ namespace BetterSlugPups
         }
         */
 
-        void ModifiedLizardUpdate(On.LizardAI.orig_Update orig, LizardAI self)
+        private void ModifiedLizardUpdate(On.LizardAI.orig_Update orig, LizardAI self)
         {
             // Loop through all the creature's prey
             foreach (PreyTracker.TrackedPrey prey in self.preyTracker.prey)
@@ -130,8 +151,29 @@ namespace BetterSlugPups
                     if (IsLizardFriends(self, owner))
                     {
                         self.preyTracker.ForgetPrey(prey.critRep.representedCreature);
-                        self.preyTracker.Update();
+                        self.preyTracker.Update(); // Apparently forgetprey doesn't run this on its own?
                     }
+                }
+            }
+            orig(self);
+        }
+
+        private void PlayerJump(On.Player.orig_Jump orig, Player self)
+        {
+            // 0.05% chance to get food by jumping if your karma is maxed out. Why? Because good deeds should be rewarded.
+            if (RandomChance(0.0005) && (self.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma >= 9)
+            {
+                self.AddFood(3);
+            }
+
+            // 0.05% chance to turn the current room into a snowy blizzard when you jump if your karma is the lowest possible.
+            if (RandomChance(0.0005) && (self.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma <= 1)
+            {
+                if (self.room.IsGateRoom() == false && self.room.abstractRoom.isAncientShelter == false)
+                {
+                    self.room.AddSnow();
+                    self.room.blizzard = true;
+                    self.room.abstractRoom.AddEntity(new AbstractWorldEntity(self.room.game.world, self.room.abstractRoom.RandomNodeInRoom(), EntityID.FromString("WhiteLizard"))); // Spawns a white lizard
                 }
             }
             orig(self);
