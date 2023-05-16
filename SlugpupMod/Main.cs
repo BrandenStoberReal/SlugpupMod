@@ -53,6 +53,7 @@ namespace BetterSlugPups
             /* This is called when the mod is loaded. */
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
             On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
+            On.LizardAI.Update += ModifiedLizardUpdate;
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
@@ -113,6 +114,24 @@ namespace BetterSlugPups
                 }
             }
             return orig(self, creature);
+        }
+
+        void ModifiedLizardUpdate(On.LizardAI.orig_Update orig, LizardAI self)
+        {
+            // Loop through all the creature's prey
+            foreach (PreyTracker.TrackedPrey prey in self.preyTracker.prey)
+            {
+                if (IsCharacterSlugpup(prey.critRep.representedCreature))
+                {
+                    Player owner = GetPlayerFromSlugpup(prey.critRep.representedCreature);
+
+                    if (IsLizardFriends(self, owner))
+                    {
+                        self.preyTracker.ForgetPrey(prey.critRep.representedCreature);
+                    }
+                }
+            }
+            orig(self);
         }
     }
 }
