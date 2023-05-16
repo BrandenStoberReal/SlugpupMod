@@ -8,6 +8,6 @@ Obviously requires the Downpour DLC.
 * Friendly lizards no longer salivate over your childen
 * Guardians no longer dropkick your children if you are "friendly" towards them
 
-#TODO
+# TODO
 * Slugpups don't throw shit at friendly lizards
 * Make slugpups not stupid
