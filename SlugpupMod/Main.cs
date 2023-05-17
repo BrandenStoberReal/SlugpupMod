@@ -18,7 +18,7 @@ using System.Collections;
 
 namespace BetterSlugPups
 {
-    [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.1")] // (GUID, mod name, mod version)
+    [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.2")] // (GUID, mod name, mod version)
     public class BetterSlugPups : BaseUnityPlugin
     {
         #region Variables
@@ -78,6 +78,7 @@ namespace BetterSlugPups
             System.Random rng = new System.Random();
             if (rng.NextDouble() < probability)
             {
+                ModLogDebug("Random probability generator returned true! (" + (probability * 100).ToString() + "% chance)");
                 return true;
             }
             else
