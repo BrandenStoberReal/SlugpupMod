@@ -9,6 +9,9 @@ using MoreSlugcats;
 using RWCustom;
 using IL;
 using On;
+using SlugpupMod.Classes;
+using RewiredConsts;
+using UnityEngine;
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
@@ -17,6 +20,11 @@ namespace BetterSlugPups
     [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.1")] // (GUID, mod name, mod version)
     public class BetterSlugPups : BaseUnityPlugin
     {
+        // Variables
+        private List<CreatureKillTracker> creatureKillTrackers = new List<CreatureKillTracker>();
+
+        private List<CreatureSeenTracker> creatureSeenTrackers = new List<CreatureSeenTracker>();
+
         // Functions
 
         /// <summary>
@@ -57,7 +65,7 @@ namespace BetterSlugPups
         /// <returns>A bool determining whether the probability succeeded</returns>
         private bool RandomChance(double probability)
         {
-            Random rng = new Random();
+            System.Random rng = new System.Random();
             if (rng.NextDouble() < probability)
             {
                 return true;
@@ -75,6 +83,8 @@ namespace BetterSlugPups
             //On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
             On.LizardAI.Update += ModifiedLizardUpdate;
             On.Player.Jump += PlayerJump;
+            On.GameSession.AddPlayer += EntryHook;
+            On.SocialEventRecognizer.Killing += MurderHook;
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
@@ -177,6 +187,84 @@ namespace BetterSlugPups
                 }
             }
             orig(self);
+        }
+
+        private void EntryHook(On.GameSession.orig_AddPlayer orig, GameSession self, AbstractCreature loadedPlayer)
+        {
+            Player coolCat = loadedPlayer.realizedCreature as Player;
+
+            CreatureKillTracker tracker = new CreatureKillTracker(coolCat);
+            CreatureSeenTracker tracker2 = new CreatureSeenTracker(coolCat);
+
+            creatureKillTrackers.Add(tracker);
+            creatureSeenTrackers.Add(tracker2);
+            orig(self, loadedPlayer);
+        }
+
+        private void MurderHook(On.SocialEventRecognizer.orig_Killing orig, SocialEventRecognizer self, Creature murderer, Creature victim)
+        {
+            if (murderer is Player)
+            {
+                Player murderCat = murderer as Player;
+                foreach (CreatureKillTracker tracker in creatureKillTrackers)
+                {
+                    if (tracker.AssociatedPlayer == murderCat)
+                    {
+                        Debug.Log("Registered a player murder");
+                        switch (victim.abstractCreature.creatureTemplate.type)
+                        {
+                            case var value when value == CreatureTemplate.Type.BlackLizard:
+                                tracker.BlackLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.BlueLizard:
+                                tracker.BlueLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.CyanLizard:
+                                tracker.CyanLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.GreenLizard:
+                                tracker.GreenLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.PinkLizard:
+                                tracker.PinkLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.RedLizard:
+                                tracker.RedLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.WhiteLizard:
+                                tracker.WhiteLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.YellowLizard:
+                                tracker.YellowLizardKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.Vulture:
+                                tracker.VultureKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.Scavenger:
+                                tracker.ScavKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.Salamander:
+                                tracker.SalemanderKills++;
+                                break;
+
+                            case var value when value == CreatureTemplate.Type.BigEel:
+                                tracker.EelLizardKills++;
+                                break;
+                        }
+                    }
+                }
+            }
+            orig(self, murderer, victim);
         }
     }
 }
