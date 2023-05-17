@@ -208,7 +208,7 @@ namespace BetterSlugPups
                 Player murderCat = murderer as Player;
                 foreach (CreatureKillTracker tracker in creatureKillTrackers)
                 {
-                    if (tracker.AssociatedPlayer == murderCat)
+                    if (tracker.AssociatedPlayer.playerState.playerNumber == murderCat.playerState.playerNumber)
                     {
                         Debug.Log("Registered a player murder");
                         switch (victim.abstractCreature.creatureTemplate.type)
