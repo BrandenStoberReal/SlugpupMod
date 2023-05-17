@@ -22,8 +22,15 @@ namespace BetterSlugPups
     public class BetterSlugPups : BaseUnityPlugin
     {
         // Variables
+
+        /// <summary>
+        /// A list containing player kill trackers
+        /// </summary>
         private List<CreatureKillTracker> creatureKillTrackers = new List<CreatureKillTracker>();
 
+        /// <summary>
+        /// A list containing player sight trackers
+        /// </summary>
         private List<CreatureSeenTracker> creatureSeenTrackers = new List<CreatureSeenTracker>();
 
         // Functions
@@ -77,15 +84,26 @@ namespace BetterSlugPups
             }
         }
 
+        /// <summary>
+        /// Internal debug logger used by the mod
+        /// </summary>
+        /// <param name="message"></param>
+        private void ModLogDebug(string message)
+        {
+            Debug.Log("[Rainworld Overhaul] " + message);
+        }
+
         // Begin hooks here
         public void OnEnable()
         {
+            ModLogDebug("Mod loaded!");
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
             //On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
             On.LizardAI.Update += ModifiedLizardUpdate;
             On.Player.Jump += PlayerJump;
             On.GameSession.AddPlayer += EntryHook;
             On.SocialEventRecognizer.Killing += MurderHook;
+            ModLogDebug("Hooks registered!");
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
@@ -174,6 +192,7 @@ namespace BetterSlugPups
             // 0.05% chance to get food by jumping if your karma is maxed out. Why? Because good deeds should be rewarded.
             if (RandomChance(0.0005) && (self.room.game.session as StoryGameSession).saveState.deathPersistentSaveData.karma >= 9)
             {
+                ModLogDebug("Initiated good luck food!");
                 self.AddFood(1);
             }
 
@@ -182,6 +201,7 @@ namespace BetterSlugPups
             {
                 if (self.room.IsGateRoom() == false && self.room.abstractRoom.isAncientShelter == false && self.room.blizzard == false)
                 {
+                    ModLogDebug("Initiated blizzard conditions!");
                     self.room.AddSnow();
                     self.room.blizzard = true;
                     self.room.abstractRoom.AddEntity(new AbstractWorldEntity(self.room.game.world, self.room.abstractRoom.RandomNodeInRoom(), EntityID.FromString("WhiteLizard"))); // Spawns a white lizard
@@ -198,6 +218,7 @@ namespace BetterSlugPups
             // If the kill tracker doesn't already exist inside the list, add it
             if (!creatureKillTrackers.Any(item => item.AssociatedPlayer.playerState.playerNumber == coolCat.playerState.playerNumber))
             {
+                ModLogDebug("A kill tracker has been created for a player!");
                 CreatureKillTracker tracker = new CreatureKillTracker(coolCat);
                 creatureKillTrackers.Add(tracker);
             }
@@ -205,6 +226,7 @@ namespace BetterSlugPups
             // If the sight tracker doesn't already exist inside the list, add it
             if (!creatureSeenTrackers.Any(item => item.AssociatedPlayer.playerState.playerNumber == coolCat.playerState.playerNumber))
             {
+                ModLogDebug("A sight tracker has been created for a player!");
                 CreatureSeenTracker tracker = new CreatureSeenTracker(coolCat);
                 creatureSeenTrackers.Add(tracker);
             }
@@ -224,62 +246,62 @@ namespace BetterSlugPups
                 switch (victim.abstractCreature.creatureTemplate.type)
                 {
                     case var value when value == CreatureTemplate.Type.BlackLizard:
-                        Debug.Log("[BetterSlugPups] A Black Lizard was murdered by a player!");
+                        ModLogDebug("A Black Lizard was murdered by a player!");
                         cachedTracker.BlackLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.BlueLizard:
-                        Debug.Log("[BetterSlugPups] A Blue Lizard was murdered by a player!");
+                        ModLogDebug("A Blue Lizard was murdered by a player!");
                         cachedTracker.BlueLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.CyanLizard:
-                        Debug.Log("[BetterSlugPups] A Cyan Lizard was murdered by a player!");
+                        ModLogDebug("A Cyan Lizard was murdered by a player!");
                         cachedTracker.CyanLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.GreenLizard:
-                        Debug.Log("[BetterSlugPups] A Green Lizard was murdered by a player!");
+                        ModLogDebug("A Green Lizard was murdered by a player!");
                         cachedTracker.GreenLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.PinkLizard:
-                        Debug.Log("[BetterSlugPups] A Pink Lizard was murdered by a player!");
+                        ModLogDebug("A Pink Lizard was murdered by a player!");
                         cachedTracker.PinkLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.RedLizard:
-                        Debug.Log("[BetterSlugPups] A Red Lizard was murdered by a player!");
+                        ModLogDebug("A Red Lizard was murdered by a player!");
                         cachedTracker.RedLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.WhiteLizard:
-                        Debug.Log("[BetterSlugPups] A White Lizard was murdered by a player!");
+                        ModLogDebug("A White Lizard was murdered by a player!");
                         cachedTracker.WhiteLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.YellowLizard:
-                        Debug.Log("[BetterSlugPups] A Yellow Lizard was murdered by a player!");
+                        ModLogDebug("A Yellow Lizard was murdered by a player!");
                         cachedTracker.YellowLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Vulture:
-                        Debug.Log("[BetterSlugPups] A Vulture was murdered by a player!");
+                        ModLogDebug("A Vulture was murdered by a player!");
                         cachedTracker.VultureKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Scavenger:
-                        Debug.Log("[BetterSlugPups] A Scavenger was murdered by a player!");
+                        ModLogDebug("A Scavenger was murdered by a player!");
                         cachedTracker.ScavKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Salamander:
-                        Debug.Log("[BetterSlugPups] A Salamander was murdered by a player!");
+                        ModLogDebug("A Salamander was murdered by a player!");
                         cachedTracker.SalemanderKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.BigEel:
-                        Debug.Log("[BetterSlugPups] A Big Eel was murdered by a player!");
+                        ModLogDebug("A Big Eel was murdered by a player!");
                         cachedTracker.EelLizardKills++;
                         break;
                 }
