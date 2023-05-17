@@ -206,62 +206,57 @@ namespace BetterSlugPups
             if (murderer is Player)
             {
                 Player murderCat = murderer as Player;
-                foreach (CreatureKillTracker tracker in creatureKillTrackers)
+                CreatureKillTracker cachedTracker = creatureKillTrackers.Find(x => x.AssociatedPlayer.playerState.playerNumber == murderCat.playerState.playerNumber);
+                Debug.Log("[BetterSlugPups] Registered a murder by a player!");
+                switch (victim.abstractCreature.creatureTemplate.type)
                 {
-                    if (tracker.AssociatedPlayer.playerState.playerNumber == murderCat.playerState.playerNumber)
-                    {
-                        Debug.Log("[BetterSlugPups] Registered a murder by a player!");
-                        switch (victim.abstractCreature.creatureTemplate.type)
-                        {
-                            case var value when value == CreatureTemplate.Type.BlackLizard:
-                                tracker.BlackLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.BlackLizard:
+                        cachedTracker.BlackLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.BlueLizard:
-                                tracker.BlueLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.BlueLizard:
+                        cachedTracker.BlueLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.CyanLizard:
-                                tracker.CyanLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.CyanLizard:
+                        cachedTracker.CyanLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.GreenLizard:
-                                tracker.GreenLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.GreenLizard:
+                        cachedTracker.GreenLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.PinkLizard:
-                                tracker.PinkLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.PinkLizard:
+                        cachedTracker.PinkLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.RedLizard:
-                                tracker.RedLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.RedLizard:
+                        cachedTracker.RedLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.WhiteLizard:
-                                tracker.WhiteLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.WhiteLizard:
+                        cachedTracker.WhiteLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.YellowLizard:
-                                tracker.YellowLizardKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.YellowLizard:
+                        cachedTracker.YellowLizardKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.Vulture:
-                                tracker.VultureKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.Vulture:
+                        cachedTracker.VultureKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.Scavenger:
-                                tracker.ScavKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.Scavenger:
+                        cachedTracker.ScavKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.Salamander:
-                                tracker.SalemanderKills++;
-                                break;
+                    case var value when value == CreatureTemplate.Type.Salamander:
+                        cachedTracker.SalemanderKills++;
+                        break;
 
-                            case var value when value == CreatureTemplate.Type.BigEel:
-                                tracker.EelLizardKills++;
-                                break;
-                        }
-                    }
+                    case var value when value == CreatureTemplate.Type.BigEel:
+                        cachedTracker.EelLizardKills++;
+                        break;
                 }
             }
             orig(self, murderer, victim);
