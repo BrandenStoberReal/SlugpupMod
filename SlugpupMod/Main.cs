@@ -21,7 +21,7 @@ namespace BetterSlugPups
     [BepInPlugin("brandenstober.better_slugpuppies", "Better Slugpups", "0.1.1")] // (GUID, mod name, mod version)
     public class BetterSlugPups : BaseUnityPlugin
     {
-        // Variables
+        #region Variables
 
         /// <summary>
         /// A list containing player kill trackers
@@ -33,7 +33,9 @@ namespace BetterSlugPups
         /// </summary>
         private List<CreatureSeenTracker> creatureSeenTrackers = new List<CreatureSeenTracker>();
 
-        // Functions
+        #endregion Variables
+
+        #region Functions
 
         /// <summary>
         /// Gets the owner of a slugpup
@@ -93,7 +95,9 @@ namespace BetterSlugPups
             Debug.Log("[Rainworld Overhaul] " + message);
         }
 
-        // Begin hooks here
+        #endregion Functions
+
+        // Function called when mod first loads
         public void OnEnable()
         {
             ModLogDebug("Mod loaded!");
@@ -105,6 +109,8 @@ namespace BetterSlugPups
             On.SocialEventRecognizer.Killing += MurderHook;
             ModLogDebug("Hooks registered!");
         }
+
+        #region Hooks
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
         // The function must return the same type as the original function
@@ -177,6 +183,7 @@ namespace BetterSlugPups
                 {
                     Player owner = GetPlayerFromSlugpup(prey.critRep.representedCreature);
 
+                    // If lizard is friends with the owner, it is also friends with the slugpup
                     if (IsLizardFriends(self, owner))
                     {
                         self.preyTracker.ForgetPrey(prey.critRep.representedCreature);
@@ -308,5 +315,7 @@ namespace BetterSlugPups
             }
             orig(self, murderer, victim);
         }
+
+        #endregion Hooks
     }
 }
