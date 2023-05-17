@@ -12,6 +12,7 @@ using On;
 using SlugpupMod.Classes;
 using RewiredConsts;
 using UnityEngine;
+using System.Collections;
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
@@ -189,18 +190,29 @@ namespace BetterSlugPups
             orig(self);
         }
 
+        // This function is called whenever a player is added to the current level
         private void EntryHook(On.GameSession.orig_AddPlayer orig, GameSession self, AbstractCreature loadedPlayer)
         {
             Player coolCat = loadedPlayer.realizedCreature as Player;
 
-            CreatureKillTracker tracker = new CreatureKillTracker(coolCat);
-            CreatureSeenTracker tracker2 = new CreatureSeenTracker(coolCat);
+            // If the kill tracker doesn't already exist inside the list, add it
+            if (!creatureKillTrackers.Any(item => item.AssociatedPlayer.playerState.playerNumber == coolCat.playerState.playerNumber))
+            {
+                CreatureKillTracker tracker = new CreatureKillTracker(coolCat);
+                creatureKillTrackers.Add(tracker);
+            }
 
-            creatureKillTrackers.Add(tracker);
-            creatureSeenTrackers.Add(tracker2);
+            // If the sight tracker doesn't already exist inside the list, add it
+            if (!creatureSeenTrackers.Any(item => item.AssociatedPlayer.playerState.playerNumber == coolCat.playerState.playerNumber))
+            {
+                CreatureSeenTracker tracker = new CreatureSeenTracker(coolCat);
+                creatureSeenTrackers.Add(tracker);
+            }
+
             orig(self, loadedPlayer);
         }
 
+        // This function is called whenever a kill event happens
         private void MurderHook(On.SocialEventRecognizer.orig_Killing orig, SocialEventRecognizer self, Creature murderer, Creature victim)
         {
             if (murderer is Player)
