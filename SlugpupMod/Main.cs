@@ -54,6 +54,7 @@ namespace BetterSlugPups
             On.TempleGuardAI.ThrowOutScore += ThrowOutScoreHook;
             //On.LizardAI.DoIWantToBiteThisCreature += BiteCreatureHook;
             On.LizardAI.Update += ModifiedLizardUpdate;
+            On.World.LoadWorld += StartHook;
         }
 
         // 1st argument is a reference to the original function, 2nd argument is a reference to the parent class calling the function, and anything after is the base function's arguments
