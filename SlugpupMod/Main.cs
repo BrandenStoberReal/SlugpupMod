@@ -210,7 +210,7 @@ namespace BetterSlugPups
                 {
                     if (tracker.AssociatedPlayer.playerState.playerNumber == murderCat.playerState.playerNumber)
                     {
-                        Debug.Log("Registered a player murder");
+                        Debug.Log("[BetterSlugPups] Registered a murder by a player!");
                         switch (victim.abstractCreature.creatureTemplate.type)
                         {
                             case var value when value == CreatureTemplate.Type.BlackLizard:
