@@ -218,55 +218,68 @@ namespace BetterSlugPups
             if (murderer is Player)
             {
                 Player murderCat = murderer as Player;
+
+                // Efficient method to fetch the tracker object from the list without a ForEach statement
                 CreatureKillTracker cachedTracker = creatureKillTrackers.Find(x => x.AssociatedPlayer.playerState.playerNumber == murderCat.playerState.playerNumber);
-                Debug.Log("[BetterSlugPups] Registered a murder by a player!");
                 switch (victim.abstractCreature.creatureTemplate.type)
                 {
                     case var value when value == CreatureTemplate.Type.BlackLizard:
+                        Debug.Log("[BetterSlugPups] A Black Lizard was murdered by a player!");
                         cachedTracker.BlackLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.BlueLizard:
+                        Debug.Log("[BetterSlugPups] A Blue Lizard was murdered by a player!");
                         cachedTracker.BlueLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.CyanLizard:
+                        Debug.Log("[BetterSlugPups] A Cyan Lizard was murdered by a player!");
                         cachedTracker.CyanLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.GreenLizard:
+                        Debug.Log("[BetterSlugPups] A Green Lizard was murdered by a player!");
                         cachedTracker.GreenLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.PinkLizard:
+                        Debug.Log("[BetterSlugPups] A Pink Lizard was murdered by a player!");
                         cachedTracker.PinkLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.RedLizard:
+                        Debug.Log("[BetterSlugPups] A Red Lizard was murdered by a player!");
                         cachedTracker.RedLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.WhiteLizard:
+                        Debug.Log("[BetterSlugPups] A White Lizard was murdered by a player!");
                         cachedTracker.WhiteLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.YellowLizard:
+                        Debug.Log("[BetterSlugPups] A Yellow Lizard was murdered by a player!");
                         cachedTracker.YellowLizardKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Vulture:
+                        Debug.Log("[BetterSlugPups] A Vulture was murdered by a player!");
                         cachedTracker.VultureKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Scavenger:
+                        Debug.Log("[BetterSlugPups] A Scavenger was murdered by a player!");
                         cachedTracker.ScavKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.Salamander:
+                        Debug.Log("[BetterSlugPups] A Salamander was murdered by a player!");
                         cachedTracker.SalemanderKills++;
                         break;
 
                     case var value when value == CreatureTemplate.Type.BigEel:
+                        Debug.Log("[BetterSlugPups] A Big Eel was murdered by a player!");
                         cachedTracker.EelLizardKills++;
                         break;
                 }
